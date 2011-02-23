@@ -46,11 +46,11 @@ echo "UPDATE \`${PREFIX}core_config_data\` SET value='$TESTING_AUTHNET_LOGIN' WH
 echo "UPDATE \`${PREFIX}core_config_data\` SET value='$TESTING_AUTHNET_TRANSKEY' WHERE value LIKE 'payment/authorizenet/transkey';" | mysql -u $DST_DBUSER -p$DST_DBPASS $DST_DBNAME
 
 # everything is free
-echo "INSERT INTO \`${PREFIX}mage_catalogrule\` VALUES(2,'dev','','2011-02-23','2022-04-23','0,1,2,3',1,'a:6:{s:4:\"type\";s:34:\"catalogrule/rule_condition_combine\";s:9:\"attribute\";N;s:8:\"operator\";N;s:5:\"value\";s:1:\"1\";s:18:\"is_value_processed\";N;s:10:\"aggregator\";s:3:\"all\";}','a:4:{s:4:\"type\";s:34:\"catalogrule/rule_action_collection\";s:9:\"attribute\";N;s:8:\"operator\";s:1:\"=\";s:5:\"value\";N;}',0,0,'by_percent','100.0000','1');" | mysql -u $DST_DBUSER -p$DST_DBPASS $DST_DBNAME
+echo "INSERT INTO \`${PREFIX}catalogrule\` VALUES(2,'dev','','2011-02-23','2022-04-23','0,1,2,3',1,'a:6:{s:4:\"type\";s:34:\"catalogrule/rule_condition_combine\";s:9:\"attribute\";N;s:8:\"operator\";N;s:5:\"value\";s:1:\"1\";s:18:\"is_value_processed\";N;s:10:\"aggregator\";s:3:\"all\";}','a:4:{s:4:\"type\";s:34:\"catalogrule/rule_action_collection\";s:9:\"attribute\";N;s:8:\"operator\";s:1:\"=\";s:5:\"value\";N;}',0,0,'by_percent','100.0000','1');" | mysql -u $DST_DBUSER -p$DST_DBPASS $DST_DBNAME
 
-echo "UPDATE \`${PREFIX}core_config_data\` SET value=1 WHERE path='carriers/freeshipping/active';"
+echo "UPDATE \`${PREFIX}core_config_data\` SET value=1 WHERE path='carriers/freeshipping/active';" | mysql -u $DST_DBUSER -p$DST_DBPASS $DST_DBNAME
 
-echo "UPDATE \`${PREFIX}core_config_data\` SET value=1 WHERE path='carriers/free/active';"
+echo "UPDATE \`${PREFIX}core_config_data\` SET value=1 WHERE path='payment/free/active';" | mysql -u $DST_DBUSER -p$DST_DBPASS $DST_DBNAME
 
 sed -i "s/<prefix>[a-zA-Z]*<\/prefix>/<prefix>$DST_DBNAME<\/prefix>/" $DST_DIR/app/etc/local.xml
 sed -i "s/<username><\!\[CDATA\[$SRC_DBUSER\]\]><\/username>/<username><![CDATA[$DST_DBUSER]]><\/username>/" $DST_DIR/app/etc/local.xml
