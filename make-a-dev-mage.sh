@@ -27,18 +27,30 @@ rm -rf $DST_DIR
 rsync -a $SRC_DIR/ $DST_DIR/
 echo "drop database $DST_DBNAME" | mysql -u $DST_DBUSER -p$DST_DBPASS
 echo "create database $DST_DBNAME" | mysql -u $DST_DBUSER -p$DST_DBPASS
-mysql  -u $DST_DBUSER -p$DST_DBPASS $DST_DBNAME < $SRC_DBFILE
+mysql -u $DST_DBUSER -p$DST_DBPASS $DST_DBNAME < $SRC_DBFILE
+
+# induce amnesia
 rm -rf $DST_DIR/var/cache/*
 rm -rf $DST_DIR/var/session/*
-echo "update ${PREFIX}core_config_data set value='$DST_URL' where path like 'web/%/base_url';" | mysql -u $DST_DBUSER -p$DST_DBPASS $DST_DBNAME
-echo "update ${PREFIX}core_config_data set value='$TESTING_MAIL' where value like '%@%.com';" | mysql -u $DST_DBUSER -p$DST_DBPASS $DST_DBNAME
-echo "update ${PREFIX}core_config_data set value='$TESTING_MAIL' where value like '%@%.org';" | mysql -u $DST_DBUSER -p$DST_DBPASS $DST_DBNAME
-echo "update ${PREFIX}core_config_data set value='$TESTING_MAIL' where value like '%@%.net';" | mysql -u $DST_DBUSER -p$DST_DBPASS $DST_DBNAME
 
-echo "update ${PREFIX}core_config_data set value='1' where path like 'payment/authorizenet/debug';" | mysql -u $DST_DBUSER -p$DST_DBPASS $DST_DBNAME
-echo "update ${PREFIX}core_config_data set value='1' where value like 'payment/authorizenet/test';" | mysql -u $DST_DBUSER -p$DST_DBPASS $DST_DBNAME
-echo "update ${PREFIX}core_config_data set value='$TESTING_AUTHNET_LOGIN' where value like 'payment/authorizenet/login';" | mysql -u $DST_DBUSER -p$DST_DBPASS $DST_DBNAME
-echo "update ${PREFIX}core_config_data set value='$TESTING_AUTHNET_TRANSKEY' where value like 'payment/authorizenet/transkey';" | mysql -u $DST_DBUSER -p$DST_DBPASS $DST_DBNAME
+# send me mixed messages
+echo "UPDATE \`${PREFIX}core_config_data\` SET value='$DST_URL' WHERE path LIKE 'web/%/base_url';" | mysql -u $DST_DBUSER -p$DST_DBPASS $DST_DBNAME
+echo "UPDATE \`${PREFIX}core_config_data\` SET value='$TESTING_MAIL' WHERE value LIKE '%@%.com';" | mysql -u $DST_DBUSER -p$DST_DBPASS $DST_DBNAME
+echo "UPDATE \`${PREFIX}core_config_data\` SET value='$TESTING_MAIL' WHERE value LIKE '%@%.org';" | mysql -u $DST_DBUSER -p$DST_DBPASS $DST_DBNAME
+echo "UPDATE \`${PREFIX}core_config_data\` SET value='$TESTING_MAIL' WHERE value LIKE '%@%.net';" | mysql -u $DST_DBUSER -p$DST_DBPASS $DST_DBNAME
+
+# everything is debug
+echo "UPDATE \`${PREFIX}core_config_data\` SET value='1' WHERE path LIKE 'payment/authorizenet/debug';" | mysql -u $DST_DBUSER -p$DST_DBPASS $DST_DBNAME
+echo "UPDATE \`${PREFIX}core_config_data\` SET value='1' WHERE value LIKE 'payment/authorizenet/test';" | mysql -u $DST_DBUSER -p$DST_DBPASS $DST_DBNAME
+echo "UPDATE \`${PREFIX}core_config_data\` SET value='$TESTING_AUTHNET_LOGIN' WHERE value LIKE 'payment/authorizenet/login';" | mysql -u $DST_DBUSER -p$DST_DBPASS $DST_DBNAME
+echo "UPDATE \`${PREFIX}core_config_data\` SET value='$TESTING_AUTHNET_TRANSKEY' WHERE value LIKE 'payment/authorizenet/transkey';" | mysql -u $DST_DBUSER -p$DST_DBPASS $DST_DBNAME
+
+# everything is free
+echo "INSERT INTO \`${PREFIX}mage_catalogrule\` VALUES(2,'dev','','2011-02-23','2022-04-23','0,1,2,3',1,'a:6:{s:4:\"type\";s:34:\"catalogrule/rule_condition_combine\";s:9:\"attribute\";N;s:8:\"operator\";N;s:5:\"value\";s:1:\"1\";s:18:\"is_value_processed\";N;s:10:\"aggregator\";s:3:\"all\";}','a:4:{s:4:\"type\";s:34:\"catalogrule/rule_action_collection\";s:9:\"attribute\";N;s:8:\"operator\";s:1:\"=\";s:5:\"value\";N;}',0,0,'by_percent','100.0000','1');" | mysql -u $DST_DBUSER -p$DST_DBPASS $DST_DBNAME
+
+echo "UPDATE \`${PREFIX}core_config_data\` SET value=1 WHERE path='carriers/freeshipping/active';"
+
+echo "UPDATE \`${PREFIX}core_config_data\` SET value=1 WHERE path='carriers/free/active';"
 
 sed -i "s/<prefix>[a-zA-Z]*<\/prefix>/<prefix>$DST_DBNAME<\/prefix>/" $DST_DIR/app/etc/local.xml
 sed -i "s/<username><\!\[CDATA\[$SRC_DBUSER\]\]><\/username>/<username><![CDATA[$DST_DBUSER]]><\/username>/" $DST_DIR/app/etc/local.xml
